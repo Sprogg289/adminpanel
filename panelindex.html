@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Driver Panel | NorthStar Logistics</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+body {
+  background-color: #0d1117;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+div.panel {
+  background: linear-gradient(145deg, #161b22, #12161c);
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  padding: 2rem;
+  max-width: 28rem;
+  margin: 3rem auto;
+}
+
+h1, h2 { color: #4a6a8c; }
+
+input, textarea {
+  background-color: #161b22;
+  color: white;
+  border: 1px solid #4a6a8c;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #cfd8e3;
+}
+
+button {
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+button.bg-blue-600 {
+  background-color: #2c3e50;
+}
+
+button.bg-blue-600:hover {
+  background-color: #4a6a8c;
+}
+
+button.bg-red-600 {
+  background-color: #4a6a8c;
+}
+
+button.bg-red-600:hover {
+  background-color: #2c3e50;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0,0,0,0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+.modal-content {
+  background: linear-gradient(145deg, #161b22, #12161c);
+  padding: 2rem;
+  border-radius: 1rem;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  width: 24rem;
+}
+.modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.modal-text {
+  white-space: pre-wrap;
+  text-align: left;
+}
+</style>
+</head>
+
+<body>
+
+<div class="panel">
+
+<h1 class="text-2xl font-bold mb-4">Driver Panel</h1>
+
+<p>Welcome, <span id="driverName"></span></p>
+
+<h2 class="text-xl font-bold mt-6 mb-2">Log Work Hours</h2>
+
+<label>Date</label>
+<input type="date" id="date" class="p-2 w-full mb-2 rounded">
+
+<div class="grid grid-cols-3 gap-2 mb-2">
+  <input type="number" id="hours" placeholder="Hours" min="0" class="p-2 rounded">
+  <input type="number" id="minutes" placeholder="Minutes" min="0" max="59" class="p-2 rounded">
+  <input type="number" id="seconds" placeholder="Seconds" min="0" max="59" class="p-2 rounded">
+</div>
+
+<label>Notes</label>
+<textarea id="notes" placeholder="Notes..." class="p-2 w-full mb-2 rounded"></textarea>
+
+<button onclick="logHours()" class="bg-blue-600 text-white px-4 py-2 w-full rounded mb-2">Submit Log</button>
+
+<button onclick="logout()" class="bg-red-600 text-white px-4 py-2 w-full rounded">Logout</button>
+</div>
+
+<!-- MODAL -->
+<div id="driverPopup" class="modal-overlay">
+  <div class="modal-content">
+    <p id="popupMessage" class="modal-text"></p>
+    <div class="modal-buttons">
+      <button id="popupOkBtn" class="bg-blue-600 text-white px-4 py-2 rounded">OK</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Check driver login
+if(!localStorage.getItem("driverLoggedIn")){
+  window.location.href="index.html";
+}
+
+// Show driver name
+const driver = localStorage.getItem("driverName");
+document.getElementById("driverName").textContent = driver;
+
+// Logs from localStorage
+let logs = JSON.parse(localStorage.getItem("logs")) || [];
+
+// Show popup function
+function showPopup(message){
+  const modal = document.getElementById("driverPopup");
+  document.getElementById("popupMessage").innerText = message;
+  modal.style.display = "flex";
+  document.getElementById("popupOkBtn").onclick = ()=>{modal.style.display="none";}
+}
+
+// Log hours
+function logHours(){
+  if(!date.value)return showPopup("Please select a date");
+
+  logs.push({
+    driver: driver,
+    date: date.value,
+    hours: hours.value || 0,
+    minutes: minutes.value || 0,
+    seconds: seconds.value || 0,
+    notes: notes.value || ""
+  });
+
+  localStorage.setItem("logs", JSON.stringify(logs));
+
+  // Reset inputs
+  date.value = "";
+  hours.value = "";
+  minutes.value = "";
+  seconds.value = "";
+  notes.value = "";
+
+  showPopup("Log submitted successfully!");
+}
+
+// Logout
+function logout(){
+  localStorage.removeItem("driverLoggedIn");
+  localStorage.removeItem("driverName");
+  window.location.href="index.html";
+}
+</script>
+</body>
+</html>

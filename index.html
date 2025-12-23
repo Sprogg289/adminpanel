@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | NorthStar Logistics</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* COLORS FROM HOMEPAGE */
+    body {
+      background-color: #0d1117; /* dark background */
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    input {
+      background-color: #161b22; /* dark input background */
+      color: white;
+      border: 1px solid #4a6a8c; /* accent border */
+    }
+
+    input::placeholder {
+      color: #cfd8e3;
+    }
+
+    button.driver-btn {
+      background-color: #2c3e50; /* driver login button color */
+    }
+
+    button.driver-btn:hover {
+      background-color: #4a6a8c; /* accent hover */
+    }
+
+    button.admin-btn {
+      background-color: #4a6a8c; /* admin login button color */
+    }
+
+    button.admin-btn:hover {
+      background-color: #2c3e50;
+    }
+
+    .underline-btn {
+      color: #4a6a8c;
+    }
+
+    .underline-btn:hover {
+      color: #cfd8e3;
+    }
+
+    .login-container {
+      background: linear-gradient(145deg, #161b22, #12161c);
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      width: 24rem;
+    }
+  </style>
+</head>
+
+<body class="flex items-center justify-center h-screen">
+
+  <!-- DRIVER LOGIN -->
+  <div id="driverLogin" class="login-container">
+    <h1 class="text-2xl font-bold mb-6 text-center text-[#4a6a8c]">Driver Login</h1>
+
+    <form id="driverForm">
+      <input id="driverUser" placeholder="Username"
+        class="w-full p-2 mb-4 rounded" required>
+
+      <input id="driverPass" type="password" placeholder="Password"
+        class="w-full p-2 mb-4 rounded" required>
+
+      <button class="w-full py-2 rounded driver-btn text-white font-bold mb-2">
+        Driver Login
+      </button>
+    </form>
+
+    <p id="driverError" class="text-red-600 text-center mt-4 hidden">
+      Invalid driver login
+    </p>
+
+    <button onclick="showAdminLogin()"
+      class="w-full mt-4 text-sm underline underline-btn text-center">
+      Admin Login
+    </button>
+  </div>
+
+  <!-- ADMIN LOGIN -->
+  <div id="adminLogin" class="login-container hidden">
+    <h1 class="text-2xl font-bold mb-6 text-center text-[#4a6a8c]">Admin Login</h1>
+
+    <form id="adminForm">
+      <input id="adminUser" placeholder="Admin Username"
+        class="w-full p-2 mb-4 rounded" required>
+
+      <input id="adminPass" type="password" placeholder="Admin Password"
+        class="w-full p-2 mb-4 rounded" required>
+
+      <button class="w-full py-2 rounded admin-btn text-white font-bold mb-2">
+        Admin Login
+      </button>
+    </form>
+
+    <p id="adminError" class="text-red-600 text-center mt-4 hidden">
+      Access Declined
+    </p>
+
+    <button onclick="showDriverLogin()"
+      class="w-full mt-4 text-sm underline underline-btn text-center">
+      Back to Driver Login
+    </button>
+  </div>
+
+  <script>
+    // 🔐 CREATE YOUR ADMIN HERE
+    const admin = {
+      username: "sprogg28",
+      password: "NorthStar"
+    };
+
+    // 🚛 DRIVERS ARE CREATED BY ADMIN PANEL
+    const drivers = JSON.parse(localStorage.getItem("drivers")) || [];
+
+    // DRIVER LOGIN
+    document.getElementById("driverForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const u = driverUser.value;
+      const p = driverPass.value;
+
+      const valid = drivers.find(
+        d => d.username === u && d.password === p
+      );
+
+      if (valid) {
+        localStorage.setItem("driverLoggedIn", "true");
+        localStorage.setItem("driverName", u);
+        window.location.href = "panelindex.html";
+      } else {
+        driverError.classList.remove("hidden");
+      }
+    });
+
+    // ADMIN LOGIN
+    document.getElementById("adminForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      if (adminUser.value === admin.username &&
+          adminPass.value === admin.password) {
+        localStorage.setItem("adminLoggedIn", "true");
+        window.location.href = "adminpanelindex.html";
+      } else {
+        adminError.classList.remove("hidden");
+      }
+    });
+
+    function showAdminLogin() {
+      driverLogin.classList.add("hidden");
+      adminLogin.classList.remove("hidden");
+      driverError.classList.add("hidden");
+    }
+
+    function showDriverLogin() {
+      adminLogin.classList.add("hidden");
+      driverLogin.classList.remove("hidden");
+      adminError.classList.add("hidden");
+    }
+  </script>
+
+</body>
+</html>
